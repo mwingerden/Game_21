@@ -143,9 +143,9 @@ card Deck::ReturnCard(int pos)
 	shuffledDeck_.erase(shuffledDeck_.begin() + pos);
 	return temp;
 }
-size_t Deck::ReturnSizeofDeck()
+int Deck::ReturnSizeofDeck()
 {
-	return shuffledDeck_.size();
+	return (int)shuffledDeck_.size();
 }
 
 void Deck::CheckEmpty()

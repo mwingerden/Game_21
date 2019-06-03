@@ -1,4 +1,5 @@
 #pragma once
+#include <iostream>
 #include <vector>
 
 enum suits {Spades, Diamonds, Clubs, Hearts};
@@ -19,7 +20,7 @@ public:
 	void SetDisplayShuffledDeck();
 	card ReturnCard(int pos);
 	std::vector<card>& GetShuffledDeck();
-	size_t ReturnSizeofDeck();
+	int ReturnSizeofDeck();
 	void CheckEmpty();
 	friend std::ostream& operator<<(std::ostream& os, const Deck& rhs);
 private:
