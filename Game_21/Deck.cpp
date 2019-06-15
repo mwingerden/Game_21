@@ -57,7 +57,7 @@ std::ostream& operator<<(std::ostream& os, const Deck& rhs)
 {
 	std::vector<card> temp{};
 	if(rhs.check)
-		temp = rhs.shuffledDeck_;
+		temp = rhs.shuffledShoe_;
 	else
 		temp = rhs.shoe_;
 
@@ -116,9 +116,9 @@ std::ostream& operator<<(std::ostream& os, const Deck& rhs)
 
 void Deck::ShuffleDeck()
 {
-	shuffledDeck_ = shoe_;
+	shuffledShoe_ = shoe_;
 
-	std::random_shuffle(shuffledDeck_.begin(), shuffledDeck_.end());
+	std::random_shuffle(shuffledShoe_.begin(), shuffledShoe_.end());
 }
 
 void Deck::SetDisplayNormalDeck()
@@ -133,24 +133,24 @@ void Deck::SetDisplayShuffledDeck()
 
 std::vector<card>& Deck::GetShuffledDeck()
 {
-	return shuffledDeck_;
+	return shuffledShoe_;
 }
 
 card Deck::ReturnCard()
 {
 	card temp{};
-	temp = shuffledDeck_.at(shuffledDeck_.size() - 1);
-	shuffledDeck_.pop_back();;
+	temp = shuffledShoe_.at(shuffledShoe_.size() - 1);
+	shuffledShoe_.pop_back();;
 	return temp;
 }
 int Deck::ReturnSizeofDeck()
 {
-	return (int)shuffledDeck_.size();
+	return (int)shuffledShoe_.size();
 }
 
 void Deck::CheckEmpty()
 {
-	if(shuffledDeck_.empty())
+	if(shuffledShoe_.empty())
 	{
 		ShuffleDeck();
 	}

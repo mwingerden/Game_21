@@ -27,7 +27,7 @@ private:
 	const int numOfDecks_;
 	bool check{};
 	std::vector<card> shoe_{};
-	std::vector<card> shuffledDeck_{};
+	std::vector<card> shuffledShoe_{};
 	static void AssignSuit(enum suit &type, const int suit);
 	//  card returnEmptyCard() const;
 };
