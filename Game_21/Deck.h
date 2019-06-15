@@ -2,17 +2,17 @@
 #include <iostream>
 #include <vector>
 
-enum suits {Spades, Diamonds, Clubs, Hearts};
+enum suit {Spades, Diamonds, Clubs, Hearts};
 struct card
 {
 	int value;
-	suits type;
+	suit type;
 };
 
 class Deck
 {
 public:
-	Deck(int deck);
+	Deck(int numOfDecks);
 	~Deck();
 	void CreateCardDeck();
 	void ShuffleDeck();
@@ -24,11 +24,11 @@ public:
 	void CheckEmpty();
 	friend std::ostream& operator<<(std::ostream& os, const Deck& rhs);
 private:
-	const int MaxDeck_;
+	const int numOfDecks_;
 	bool check{};
-	std::vector<card> deck_{};
+	std::vector<card> shoe_{};
 	std::vector<card> shuffledDeck_{};
-	static void AssignSuit(enum suits &type, const int suit);
-	card returnEmptyCard() const;
+	static void AssignSuit(enum suit &type, const int suit);
+	//  card returnEmptyCard() const;
 };
 

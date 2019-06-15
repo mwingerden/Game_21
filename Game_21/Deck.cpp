@@ -4,7 +4,7 @@
 #include <algorithm>
 
 
-Deck::Deck(int MaxDeck) : MaxDeck_(MaxDeck)
+Deck::Deck(int numOfDecks) : numOfDecks_(numOfDecks)
 {
 }
 
@@ -18,7 +18,7 @@ void Deck::CreateCardDeck()
 	int value{1};
 	int type{0};
 	card temp{};
-	for(int i = 0; i < MaxDeck_; i++)
+	for(int i = 0; i < numOfDecks_; i++)
 	{
 		if(value > 13)
 		{
@@ -28,11 +28,11 @@ void Deck::CreateCardDeck()
 		temp.value = value++;
 		AssignSuit(temp.type, type);
 		
-		deck_.push_back(temp);
+		shoe_.push_back(temp);
 	}
 }
 
-void Deck::AssignSuit(suits& type, const int suit)
+void Deck::AssignSuit(suit& type, const int suit)
 {
 	switch(suit)
 	{
@@ -59,9 +59,9 @@ std::ostream& operator<<(std::ostream& os, const Deck& rhs)
 	if(rhs.check)
 		temp = rhs.shuffledDeck_;
 	else
-		temp = rhs.deck_;
+		temp = rhs.shoe_;
 
-	for(int i = 0; i < rhs.MaxDeck_; i++)
+	for(int i = 0; i < rhs.numOfDecks_; i++)
 	{
 		if(temp.at(i).value == 1)
 		{
@@ -116,7 +116,7 @@ std::ostream& operator<<(std::ostream& os, const Deck& rhs)
 
 void Deck::ShuffleDeck()
 {
-	shuffledDeck_ = deck_;
+	shuffledDeck_ = shoe_;
 
 	std::random_shuffle(shuffledDeck_.begin(), shuffledDeck_.end());
 }
