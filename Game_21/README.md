@@ -1,3 +1,3 @@
 # documentation
 
-(BlackJack Jargon)[https://www.blackjacktactics.com/blackjack/terms/]
+[BlackJack Jargon](https://www.blackjacktactics.com/blackjack/terms/)
