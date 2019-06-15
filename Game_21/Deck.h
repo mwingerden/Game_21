@@ -18,7 +18,7 @@ public:
 	void ShuffleDeck();
 	void SetDisplayNormalDeck();
 	void SetDisplayShuffledDeck();
-	card ReturnCard(int pos);
+	card ReturnCard();
 	std::vector<card>& GetShuffledDeck();
 	int ReturnSizeofDeck();
 	void CheckEmpty();

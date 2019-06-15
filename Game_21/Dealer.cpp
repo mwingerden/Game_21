@@ -13,26 +13,32 @@ Dealer::~Dealer()
 {
 }
 
-bool Dealer::CheckHand() const
+bool Dealer::CheckHand()
 {
 	if(total_ > 21)
 	{
 		std::cout << "The dealer has busted." << std::endl;
-		return false;
+		return true;
 	}
 	else if(total_ == 21)
 	{
 		std::cout << "The dealer has a natural BlackJack!" << std::endl;
+		return true;
+	}
+	else if(aceCheck_ && total_ + 10 == 21)
+	{
+		total_ += 10;
 		return false;
 	}
 
-	return true;
+	return false;
 }
 
 void Dealer::ClearHand()
 {
 	hand_.clear();
 	total_ = 0;
+	aceCheck_ = false;
 }
 
 void Dealer::AssignHand(Deck& deck)
@@ -41,7 +47,7 @@ void Dealer::AssignHand(Deck& deck)
 	for(int i = 0; i < 2; i++)
 	{
 		deck.CheckEmpty();
-		temp = deck.ReturnCard(RandomRange(0, deck.ReturnSizeofDeck()));
+		temp = deck.ReturnCard();
 		hand_.push_back(temp);
 		if(temp.value > 10)
 		{
@@ -122,7 +128,7 @@ void Dealer::Hit(Deck& deck)
 {
 	deck.CheckEmpty();
 	card temp{};
-	temp = deck.ReturnCard(RandomRange(0, deck.ReturnSizeofDeck()));
+	temp = deck.ReturnCard();
 	hand_.push_back(temp);
 	if(temp.value > 10)
 	{
@@ -185,4 +191,9 @@ void Dealer::DealerStart()
 int Dealer::GetTotal() const
 {
 	return total_;
+}
+
+card Dealer::ReturnHand() const
+{
+	return hand_.at(0);
 }

@@ -11,21 +11,70 @@
 
 void EndOfRound(Player &player, const Dealer &dealer, const double bet)
 {
-	if(player.GetTotal() > dealer.GetTotal() || dealer.GetTotal() > 21)
+	if(player.GetSplit())
+	{
+		if(player.GetTotal() > dealer.GetTotal() || dealer.GetTotal() > 21)
+		{
+			std::cout << "You've won the first hand!" << std::endl;
+			std::cout << "Money Gained: $" << bet << std::endl;
+			player.AddToMoney(bet);
+		}
+		else if(player.GetTotal() > 21)
+		{
+			std::cout << "You busted your first hand." << std::endl << std::endl;
+		}
+		else
+		{
+			std::cout << "You've lost your first hand this round." << std::endl;
+			std::cout << "Money lost: $" << bet << std::endl;
+			player.SubtractFromMoney(bet);
+		}
+
+		if(player.GetSecondTotal() > dealer.GetTotal() || dealer.GetTotal() > 21)
+		{
+			std::cout << "You've won the second hand!" << std::endl;
+			std::cout << "Money Gained: $" << bet << std::endl;
+			player.AddToMoney(bet);
+		}
+		else if(player.GetSecondTotal() > 21)
+		{
+			std::cout << "You busted your second hand." << std::endl << std::endl;
+		}
+		else
+		{
+			std::cout << "You've lost your second hand this round." << std::endl;
+			std::cout << "Money lost: $" << bet << std::endl;
+			player.SubtractFromMoney(bet);
+		}
+	}
+	else if(player.GetTotal() > dealer.GetTotal() || dealer.GetTotal() > 21)
 	{
 		std::cout << "You've won this round!" << std::endl;
-		std::cout << "Money Gained: $" << bet * 2 << std::endl;
-		player.AddToMoney(bet * 2);
+		std::cout << "Money Gained: $" << bet << std::endl;
+		player.AddToMoney(bet);
 	}
 	else if(player.GetTotal() == dealer.GetTotal())
 	{
 		std::cout << "It's a push." << std::endl;
-		player.AddToMoney(bet);
+	}
+	else if(dealer.GetTotal() == 21)
+	{
+		std::cout << "The Dealer has a Natural BlackJack." << std::endl;
+		std::cout << "You've lost this round." << std::endl;
+		std::cout << "Money lost: $" << bet << std::endl;
+		player.SubtractFromMoney(bet);
+		if(player.GetInsurance())
+		{
+			std::cout << "But you have insurance." << std::endl;
+			std::cout << "Money Gained: $" << (bet * 1.5) * 2 << std::endl;
+			player.AddToMoney((bet * 1.5) * 2);
+		}
 	}
 	else
 	{
 		std::cout << "You've lost this round." << std::endl;
 		std::cout << "Money lost: $" << bet << std::endl;
+		player.SubtractFromMoney(bet);
 	}
 
 	std::cout << "Your total is: $" << player.GetMoney() << std::endl;
@@ -40,28 +89,104 @@ bool CheckPlayerAmount(double amount)
 	return true;
 }
 
+void PlayerPlay(Player &player, Deck &deck, Dealer &dealer, double bet)
+{
+	std::string HitStand{};
+
+	do
+	{
+		do
+		{
+			std::cout << "Hit or Stand? ";
+			std::cin >> HitStand;
+			std::transform(HitStand.begin(), HitStand.end(), HitStand.begin(), ::tolower);
+		}while(!(HitStand == "hit" || HitStand == "stand"));
+	
+		if(HitStand == "hit")
+		{
+			player.Hit(deck);
+		}
+		else if(HitStand == "stand")
+		{
+			player.ModifyTotal(10);
+		}
+		std::cout << std::endl;
+		player.DisplayHand();
+		std::cout << std::endl;
+
+		if(!player.CheckHand())
+		{
+			std::cout << "You Have Busted!" << std::endl;
+			std::cout << "You lost $" << bet << std::endl << std::endl;
+			player.SubtractFromMoney(bet);
+			break;
+		}
+
+	}while(HitStand != "stand");
+
+	if(player.Insurance(dealer))
+	{
+		std::cout << "You have an insurance of: $" << bet * 1.5 << std::endl << std::endl;
+	}
+}
+
+void DealerPlay(Dealer &dealer, Deck &deck)
+{
+	std::cout << "The Dealer revealed the unknown card" << std::endl;
+	dealer.DisplayHand();
+
+	while(dealer.GetTotal() < 17)
+	{
+		std::cout << std::endl;
+		dealer.Hit(deck);
+		std::cout << "The Dealer hitting..." << std::endl;
+		if(dealer.CheckHand())
+		{
+			break;
+		}
+	}
+	std::cout << std::endl;
+
+	std::cout << "The Dealer's final hand:" << std::endl;
+	dealer.DisplayHand();
+
+	if(dealer.GetTotal() > 21)
+	{
+		std::cout << "The Dealer busted!" << std::endl;
+	}
+
+}
+
 int main()
 {
 	std::string choice{};
-	std::string HitStand{};
 	bool check{};
 	double amount{};
-	long double bet{};
+	double bet{};
 	std::cout << "Welcome to the game of BlackJack!" << std::endl;
 
 	do
 	{
 		std::cout << "Please type the amount of money you want to play with between $200 and $1000: $";
 		std::cin >> amount;
-		std::cout << std::endl;
-		try
-		{
-			check = CheckPlayerAmount(amount);
+		if(std::cin.fail())
+		{	
+			std::cout << "You didn't type an amount." << std::endl << std::endl;
+			std::cin.clear();
+			std::cin.ignore(256, '\n');
 		}
-		catch(...)
+		else
 		{
-			std::cout << "Please type an amount between $200 and $1000" << std::endl << std::endl;
+			try
+			{
+				check = CheckPlayerAmount(amount);
+			}
+			catch(...)
+			{
+				std::cout << "Please type an amount between $200 and $1000" << std::endl << std::endl;
+			}
 		}
+		
 	} while(!check);
 
 	Player player(amount);
@@ -93,20 +218,27 @@ int main()
 			{
 				std::cout << "Type your bet($1 - $" << player.GetMoney() << "): $";
 				std::cin >> bet;
-				std::cout << std::endl;
-				if(bet > player.GetMoney())
-				{
-					std::cout << "You are betting over you amount of $" << player.GetMoney() << std::endl <<
-						std::endl;
-				}
-				else if(bet < 1)
-				{
-					std::cout << "Bet is to low" << std::endl;
-				}
 
+				if(std::cin.fail())
+				{
+					std::cout << "You didn't type in a value." << std::endl << std::endl;
+					std::cin.clear();
+					std::cin.ignore(256, '\n');
+				}
+				else
+				{
+					std::cout << std::endl;
+					if(bet > player.GetMoney())
+					{
+						std::cout << "You are betting over you amount of $" << player.GetMoney() << std::endl <<
+							std::endl;
+					}
+					else if(bet < 1)
+					{
+						std::cout << "Bet is to low" << std::endl;
+					}
+				}
 			}while(!(bet >= 1 && bet <= player.GetMoney()));
-
-			player.SubtractFromMoney(bet);
 
 			player.AssignHand(deck);
 
@@ -118,57 +250,105 @@ int main()
 
 			player.DisplayHand();
 
-			do
+			if(player.CheckNatural(bet, dealer))
 			{
-				do
-				{
-					std::cout << "Hit or Stand? ";
-					std::cin >> HitStand;
-					std::transform(HitStand.begin(), HitStand.end(), HitStand.begin(), ::tolower);
-				}while(!(HitStand == "hit" || HitStand == "stand"));
-			
-				if(HitStand == "hit")
+				std::cout << "Your total: $" << player.GetMoney() << std::endl << std::endl << std::endl;
+			}
+			else
+			{
+				if(player.DoubleDown())
 				{
 					player.Hit(deck);
-				}
-				else if(HitStand == "stand")
-				{
-					player.ModifyTotal(10);
-				}
-				std::cout << std::endl;
-				player.DisplayHand();
-				std::cout << std::endl;
-
-				if(!player.CheckHand())
-				{
-					std::cout << "You lost $" << bet << std::endl << std::endl;
-					break;
-				}
-
-			}while(HitStand != "stand");
-
-			if(player.CheckHand())
-			{
-				dealer.DisplayHand();
-
-				while(dealer.GetTotal() < 17)
-				{
 					std::cout << std::endl;
-					dealer.Hit(deck);
-					std::cout << "The Dealer hitting..." << std::endl;
+					player.DisplayHand();
+					std::cout << std::endl << std::endl;
+					bet *= 2;
 				}
-				std::cout << std::endl;
-				
-				dealer.DisplayHand();
+				else if(player.Split())
+				{
+					player.DisplayHand();
+					do
+					{
+						do
+						{
+							std::cout << "Hit or Stand? ";
+							std::cin >> choice;
+							std::transform(choice.begin(), choice.end(), choice.begin(), ::tolower);
+						}while(!(choice == "hit" || choice == "stand"));
+					
+						if(choice == "hit")
+						{
+							player.Hit(deck);
+						}
+						else if(choice == "stand")
+						{
+							player.ModifyTotal(10);
+						}
 
-				std::cout << std::endl << std::endl;
-
-				EndOfRound(player, dealer, bet);
+						std::cout << std::endl;
+						player.DisplayHand();
+						std::cout << std::endl;
 				
-				std::cout << std::endl << std::endl;
+						if(!player.CheckHand())
+						{
+							std::cout << "You Have Busted!" << std::endl;
+							std::cout << "You lost $" << bet << std::endl << std::endl;
+							player.SubtractFromMoney(bet);
+							break;
+						}
+				
+					}while(choice != "stand");
+
+					player.DisplaySecondHand();
+
+					do
+					{
+						do
+						{
+							std::cout << "Hit or Stand? ";
+							std::cin >> choice;
+							std::transform(choice.begin(), choice.end(), choice.begin(), ::tolower);
+						}while(!(choice == "hit" || choice == "stand"));
+					
+						if(choice == "hit")
+						{
+							player.HitSecond(deck);
+						}
+						else if(choice == "stand")
+						{
+							player.ModifyTotal(10);
+						}
+
+						std::cout << std::endl;
+						player.DisplaySecondHand();
+						std::cout << std::endl;
+				
+						if(!player.CheckSecondHand())
+						{
+							std::cout << "You Have Busted!" << std::endl;
+							std::cout << "You lost $" << bet << std::endl << std::endl;
+							player.SubtractFromMoney(bet);
+							break;
+						}
+				
+					}while(choice != "stand");
+				}
+				else
+				{
+					PlayerPlay(player, deck, dealer, bet);
+				}
+
+				if(player.CheckHand())
+				{
+					DealerPlay(dealer, deck);
+
+					std::cout << std::endl << std::endl;
+
+					EndOfRound(player, dealer, bet);
+					
+					std::cout << std::endl << std::endl;
+				}
 			}
-			
-
 			player.ClearHand();
 			dealer.ClearHand();
 		}

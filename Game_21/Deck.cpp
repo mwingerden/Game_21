@@ -136,11 +136,11 @@ std::vector<card>& Deck::GetShuffledDeck()
 	return shuffledDeck_;
 }
 
-card Deck::ReturnCard(int pos)
+card Deck::ReturnCard()
 {
 	card temp{};
-	temp = shuffledDeck_.at(pos);
-	shuffledDeck_.erase(shuffledDeck_.begin() + pos);
+	temp = shuffledDeck_.at(shuffledDeck_.size() - 1);
+	shuffledDeck_.pop_back();;
 	return temp;
 }
 int Deck::ReturnSizeofDeck()
