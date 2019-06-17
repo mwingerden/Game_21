@@ -159,16 +159,18 @@ void DealerPlay(Dealer &dealer, Deck &deck)
 
 int main()
 {
+	int amountOfDecks{};
 	std::string choice{};
 	bool check{};
-	double amount{};
+	double playerMoney{};
 	double bet{};
 	std::cout << "Welcome to the game of BlackJack!" << std::endl;
 
 	do
 	{
 		std::cout << "Please type the amount of money you want to play with between $200 and $1000: $";
-		std::cin >> amount;
+		std::cin >> playerMoney;
+		std::cout << std::endl;
 		if(std::cin.fail())
 		{	
 			std::cout << "You didn't type an amount." << std::endl << std::endl;
@@ -179,7 +181,7 @@ int main()
 		{
 			try
 			{
-				check = CheckPlayerAmount(amount);
+				check = CheckPlayerAmount(playerMoney);
 			}
 			catch(...)
 			{
@@ -189,11 +191,19 @@ int main()
 		
 	} while(!check);
 
-	Player player(amount);
+
+	do
+	{
+		std::cout << "How many decks of cards do you want to play with?: ";
+		std::cin >> amountOfDecks;
+		std::cout << std::endl;
+	}while(!(amountOfDecks >= 1));
+
+	Player player(playerMoney);
 
 	Dealer dealer;
 
-	Deck deck(52);
+	Deck deck(amountOfDecks);
 
 	RandomInit();
 
