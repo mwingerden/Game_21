@@ -260,7 +260,7 @@ int main()
 
 			player.DisplayHand();
 
-			if(player.CheckNatural(bet, dealer))
+			if(player.CheckNatural(dealer))
 			{
 				std::cout << "Your total: $" << player.GetMoney() << std::endl << std::endl << std::endl;
 			}
